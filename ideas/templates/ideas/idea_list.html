@@ -1,0 +1,102 @@
+{% extends 'ideas/base.html' %}
+
+{% block title %}Lista de Ideias{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold">
+        <i class="bi bi-collection me-2"></i>
+        Minhas Ideias
+    </h2>
+    <a href="{% url 'idea_create' %}" class="btn btn-gradient">
+        <i class="bi bi-plus-lg me-1"></i>
+        Nova Ideia
+    </a>
+</div>
+
+{% if ideas %}
+<div class="row g-4">
+    {% for idea in ideas %}
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 card-hover border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <h5 class="card-title fw-bold mb-0">{{ idea.title }}</h5>
+                    <i class="{{ idea.get_status_icon }} fs-4 text-{{ idea.get_status_color }}"></i>
+                </div>
+                
+                <p class="card-text text-muted small">
+                    {{ idea.description|truncatewords:25 }}
+                </p>
+                
+                <div class="mb-3">
+                    <span class="status-badge bg-{{ idea.get_status_color }} bg-opacity-10 text-{{ idea.get_status_color }}">
+                        <i class="{{ idea.get_status_icon }} me-1 small"></i>
+                        {{ idea.get_status_display }}
+                    </span>
+                </div>
+                
+                <div class="text-muted small mb-3">
+                    <i class="bi bi-calendar3 me-1"></i>
+                    {{ idea.created_at|date:"d/m/Y H:i" }}
+                </div>
+            </div>
+            
+            <div class="card-footer bg-transparent border-0 pt-0 pb-3">
+                <div class="btn-group w-100 gap-2">
+                    <a href="{% url 'idea_update' idea.pk %}" class="btn btn-outline-warning btn-sm">
+                        <i class="bi bi-pencil me-1"></i>
+                        Editar
+                    </a>
+                    <a href="{% url 'idea_delete' idea.pk %}" class="btn btn-outline-danger btn-sm">
+                        <i class="bi bi-trash me-1"></i>
+                        Excluir
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Pagination -->
+{% if is_paginated %}
+<nav class="mt-5">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
+                <i class="bi bi-chevron-left"></i>
+            </a>
+        </li>
+        {% endif %}
+        
+        {% for num in page_obj.paginator.page_range %}
+        <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+        </li>
+        {% endfor %}
+        
+        {% if page_obj.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+                <i class="bi bi-chevron-right"></i>
+            </a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+{% else %}
+<div class="empty-state">
+    <i class="bi bi-inbox fs-1 text-muted mb-3 d-block"></i>
+    <h4 class="text-muted mb-3">Nenhuma ideia registada ainda</h4>
+    <p class="text-muted mb-4">Comece transformando suas ideias em projetos reais</p>
+    <a href="{% url 'idea_create' %}" class="btn btn-gradient">
+        <i class="bi bi-plus-lg me-1"></i>
+        Criar primeira ideia
+    </a>
+</div>
+{% endif %}
+{% endblock %}
